@@ -85,8 +85,23 @@ export default function CodeCell({ cell, index }: CodeCellProps) {
         const provider = getOrCreateWebsocketProvider(store.roomId, ydoc);
         const ytext = ydoc.getText(cell.id);
 
-        if (ytext.toString() === '' && cell.content) {
-          ytext.insert(0, cell.content);
+        let hasInitialized = false;
+        const initializeText = () => {
+          if (hasInitialized) return;
+          if (ytext.toString() === '' && cell.content) {
+            ytext.insert(0, cell.content);
+          }
+          hasInitialized = true;
+        };
+
+        if (provider.synced) {
+          initializeText();
+        } else {
+          const syncHandler = () => {
+            initializeText();
+            provider.off('sync', syncHandler);
+          };
+          provider.on('sync', syncHandler);
         }
 
         const binding = new MonacoBinding(
@@ -98,8 +113,13 @@ export default function CodeCell({ cell, index }: CodeCellProps) {
 
         ytext.observe(() => {
           const val = ytext.toString();
-          setEditorContent(val);
-          store.updateCellContent(store.activeNotebookId, cell.id, val);
+          const currentState = useLoveStudyStore.getState();
+          const activeNotebook = currentState.notebooks.find(n => n.id === store.activeNotebookId);
+          const currentCell = activeNotebook?.cells.find(c => c.id === cell.id);
+          if (currentCell && currentCell.content !== val) {
+            setEditorContent(val);
+            currentState.updateCellContent(store.activeNotebookId, cell.id, val);
+          }
         });
 
         // Sync local typing presence

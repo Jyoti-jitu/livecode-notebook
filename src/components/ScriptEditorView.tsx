@@ -99,13 +99,36 @@ export default function ScriptEditorView() {
         const ydoc = getOrCreateYjsDoc(activeNotebook.id);
         const provider = getOrCreateWebsocketProvider(store.roomId, ydoc);
         const ytext = ydoc.getText(cell.id);
-        if (ytext.toString() === '' && cell.content) ytext.insert(0, cell.content);
+
+        let hasInitialized = false;
+        const initializeText = () => {
+          if (hasInitialized) return;
+          if (ytext.toString() === '' && cell.content) {
+            ytext.insert(0, cell.content);
+          }
+          hasInitialized = true;
+        };
+
+        if (provider.synced) {
+          initializeText();
+        } else {
+          const syncHandler = () => {
+            initializeText();
+            provider.off('sync', syncHandler);
+          };
+          provider.on('sync', syncHandler);
+        }
 
         new MonacoBinding(ytext, editor.getModel(), new Set([editor]), provider.awareness);
         ytext.observe(() => {
           const val = ytext.toString();
-          setEditorContent(val);
-          store.updateCellContent(activeNotebook.id, cell.id, val);
+          const currentState = useLoveStudyStore.getState();
+          const currentNotebook = currentState.notebooks.find(n => n.id === activeNotebook.id);
+          const currentCell = currentNotebook?.cells.find(c => c.id === cell.id);
+          if (currentCell && currentCell.content !== val) {
+            setEditorContent(val);
+            currentState.updateCellContent(activeNotebook.id, cell.id, val);
+          }
         });
       });
     });
