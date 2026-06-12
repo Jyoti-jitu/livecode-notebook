@@ -18,6 +18,7 @@ LiveCode Notebook (also known as LoveStudy) is a premium real-time collaborative
 ## ⚙️ Local Development Setup
 
 ### 1. Configure Environment Variables
+
 Create a `.env.local` file in the root directory and add your MongoDB database URI:
 ```bash
 MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/lovestudy

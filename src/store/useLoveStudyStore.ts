@@ -623,44 +623,88 @@ export const useLoveStudyStore = create<LoveStudyState>((set, get) => {
       const cell = notebook.cells.find((c) => c.id === cellId);
       if (!cell) return;
       
+      const cellLanguage = cell.language || (notebook.language === 'python_notebook' ? 'python' : notebook.language) || 'python';
+      const executionCount = (cell.executionCount || 0) + 1;
+
       try {
-        const response = await fetch('/api/execute', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            code: cell.content,
-            language: cell.language || (notebook.language === 'python_notebook' ? 'python' : notebook.language) || 'python'
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error(`Execution failed: ${response.statusText}`);
-        }
-
-        const res = await response.json();
-        const executionCount = (cell.executionCount || 0) + 1;
-        
         let output: any = '';
-        if (res.stderr) {
-          output = {
-            type: 'error',
-            text: res.stderr
-          };
-        } else {
-          // Try to parse as JSON if it's a formatted table representation
-          try {
-            if (res.stdout.startsWith('{') && res.stdout.endsWith('}')) {
-              const parsed = JSON.parse(res.stdout);
-              if (parsed.type === 'table') {
-                output = parsed;
-              } else {
-                output = res.stdout;
-              }
+
+        if (cellLanguage === 'python' || cellLanguage === 'py') {
+          // Run client-side with Pyodide
+          const { runPythonCell } = await import('@/lib/pyodide');
+          const res = await runPythonCell(cell.content, get().uploadedFiles);
+
+          if (res.type === 'error') {
+            output = {
+              type: 'error',
+              text: res.message || 'Error executing Python code.'
+            };
+          } else if (res.type === 'table') {
+            const columns = res.data.columns || [];
+            const index = res.data.index || [];
+            const data = res.data.data || [];
+            
+            const headers = ['', ...columns];
+            const rows = index.map((idxVal: any, i: number) => {
+              const rowData = data[i] || [];
+              return [String(idxVal), ...rowData.map((val: any) => String(val))];
+            });
+
+            output = {
+              type: 'table',
+              headers,
+              rows
+            };
+          } else {
+            // Text output
+            if (res.stdout && res.result) {
+              output = `${res.stdout}\n${res.result}`;
+            } else if (res.stdout) {
+              output = res.stdout;
+            } else if (res.result) {
+              output = res.result;
             } else {
+              output = 'Cell executed with no outputs.';
+            }
+          }
+        } else {
+          // Run server-side backend API (for Java, C, C++, JS fallback)
+          const response = await fetch('/api/execute', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              code: cell.content,
+              language: cellLanguage
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`Execution failed: ${response.statusText}`);
+          }
+
+          const res = await response.json();
+          
+          if (res.stderr) {
+            output = {
+              type: 'error',
+              text: res.stderr
+            };
+          } else {
+            // Try to parse as JSON if it's a formatted table representation
+            try {
+              if (res.stdout.startsWith('{') && res.stdout.endsWith('}')) {
+                const parsed = JSON.parse(res.stdout);
+                if (parsed.type === 'table') {
+                  output = parsed;
+                } else {
+                  output = res.stdout;
+                }
+              } else {
+                output = res.stdout || 'Cell executed with no outputs.';
+              }
+            } catch {
               output = res.stdout || 'Cell executed with no outputs.';
             }
-          } catch {
-            output = res.stdout || 'Cell executed with no outputs.';
           }
         }
         
