@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const apiKey = process.env.GEMINI_API_KEY || "AIzaSyB6U0-va5QOltKFH9CDuCgeksYbGC9JaKI";
 
     // Use v1beta for generateContent which supports systemInstruction
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
       method: 'POST',
