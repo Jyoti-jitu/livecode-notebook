@@ -7,7 +7,7 @@ LiveCode Notebook (also known as LoveStudy) is a premium real-time collaborative
 *   **Real-time Multi-user Synchronization**: Powered by Yjs, y-monaco, and WebSocket signaling.
 *   **Interactive Python Notebook Cells**: Powered by browser-side Pyodide execution.
 *   **System Languages Compiler**: Backend execution pipeline supporting Java, C, and C++.
-*   **Collaborative Chat, Notes, & AI Helper**: Live room chat, persistent shared markdown notes, and a built-in AI assistant powered by Google's Gemini 1.5 Flash.
+*   **Collaborative Chat, Notes, & AI Helper**: Live room chat, persistent shared markdown notes, and a built-in AI assistant powered by Google's Gemini 2.5 Flash.
 *   **Streaks & Study Time Dashboard**: Track your shared learning targets and streaks.
 
 ---
@@ -49,8 +49,9 @@ git push origin main
 3. Keep the default Build and Output settings (Next.js preset).
 
 ### Step 3: Configure Environment Variables in Vercel
-Under the **Environment Variables** section in the Vercel project settings, add the following key:
+Under the **Environment Variables** section in the Vercel project settings, add the following keys:
 *   `MONGODB_URI`: Your production MongoDB connection string (e.g., MongoDB Atlas).
+*   `GEMINI_API_KEY`: Your Google Gemini API key (obtain from Google AI Studio).
 
 ### Step 4: Click Deploy 🚀
 Vercel will build, optimize, and deploy your serverless endpoints and frontend automatically.
