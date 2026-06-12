@@ -9,7 +9,11 @@ export async function POST(req: Request) {
     }
 
     // Read the API Key securely from server environment variables
-    const apiKey = process.env.GEMINI_API_KEY || "AIzaSyBoqUSP4uY0LQ1305pOWcAeRXAmglbAXg8";
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+      return NextResponse.json({ error: 'GEMINI_API_KEY is not configured in the server environment.' }, { status: 500 });
+    }
 
     // Use v1beta for generateContent which supports systemInstruction
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
