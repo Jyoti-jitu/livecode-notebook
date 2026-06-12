@@ -538,7 +538,7 @@ export const useLoveStudyStore = create<LoveStudyState>((set, get) => {
       if (!active) return;
       
       get().pushToUndo(active.cells);
-
+ 
       const notebook = notebooks.find((n) => n.id === notebookId);
       const notebookLanguage = notebook?.language && notebook.language !== 'python_notebook'
         ? notebook.language
@@ -659,7 +659,7 @@ export const useLoveStudyStore = create<LoveStudyState>((set, get) => {
             } else {
               output = res.stdout || 'Cell executed with no outputs.';
             }
-          } catch (e) {
+          } catch {
             output = res.stdout || 'Cell executed with no outputs.';
           }
         }
