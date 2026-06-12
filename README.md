@@ -2,6 +2,9 @@
 
 LiveCode Notebook (also known as LoveStudy) is a premium real-time collaborative coding workspace and interactive notebook. It supports dynamic cell execution for Python (via browser-side Pyodide) and compiles/runs system languages like Java, C, and C++ through secure backend compiler environments.
 
+> [!NOTE]
+> For a detailed architectural explanation, directory file map, and execution flowcharts, refer to the [Project Explained Guide](PROJECT_GUIDE.md).
+
 ## 🛠️ Features
 
 *   **Real-time Multi-user Synchronization**: Powered by Yjs, y-monaco, and WebSocket signaling.
