@@ -46,9 +46,6 @@ export default function RightPanelTabs() {
   const callGemini = async (promptToSend: string, currentHistory: AIMessage[]) => {
     setIsAiThinking(true);
     try {
-      const apiKey = "AIzaSyB6U0-va5QOltKFH9CDuCgeksYbGC9JaKI";
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
       // Build context structure for Gemini
       // Filter out the welcome message to ensure history begins with a 'user' turn
       const apiHistory = currentHistory.filter(msg => msg.id !== 'welcome');
@@ -62,23 +59,17 @@ export default function RightPanelTabs() {
         parts: [{ text: promptToSend }]
       });
 
-      const response = await fetch(url, {
+      const response = await fetch('/api/gemini', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          contents: contents,
-          systemInstruction: {
-            parts: [{ text: "You are a helpful, encouraging, and highly competent AI pair-programming assistant in a collaborative student code notebook room named LoveStudy. Keep your answers brief, clean, and write clear markdown code blocks whenever you show code. Encourage Jitu and Ananya to learn and collaborate!" }]
-          }
-        })
+        body: JSON.stringify({ contents })
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Gemini API Error Response:', errorText);
-        throw new Error(`Gemini API call failed with status ${response.status}: ${errorText}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Gemini API call failed');
       }
 
       const data = await response.json();
@@ -93,14 +84,18 @@ export default function RightPanelTabs() {
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      const friendlyMessage = error.message && error.message.includes('API key was reported as leaked')
+        ? 'Your GEMINI_API_KEY has been flagged as leaked by Google. Please update it with a new key in your .env.local file or deployment settings. 🛠️'
+        : 'Oops! I encountered an error communicating with Gemini. Please verify your connection and try again. 🛠️';
+      
       setAiMessages(prev => [
         ...prev,
         {
           id: `ai-err-${Date.now()}`,
           sender: 'ai',
-          text: 'Oops! I encountered an error communicating with Gemini. Please verify your connection and try again. 🛠️',
+          text: friendlyMessage,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
