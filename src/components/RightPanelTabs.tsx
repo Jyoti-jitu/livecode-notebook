@@ -6,7 +6,7 @@ import CollaboratorsCard from './CollaboratorsCard';
 import LiveChat from './LiveChat';
 import LoveStudyWidgets from './LoveStudyWidgets';
 import NotebookInfo from './NotebookInfo';
-import { MessageSquare, FileText, Sparkles, Send, Copy, AlertTriangle, Terminal, Bot } from 'lucide-react';
+import { MessageSquare, FileText, Sparkles, Send, Copy, RefreshCw, AlertTriangle, Terminal, Bot, Trash2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -241,6 +241,31 @@ export default function RightPanelTabs() {
 
         {activeTab === 'ai' && (
           <div className="flex flex-col h-[520px] overflow-hidden bg-rose-50/20 dark:bg-love-dark/10 border border-rose-100/35 dark:border-rose-950/10 rounded-2xl">
+            {/* Header with Clear Button */}
+            <div className="px-3.5 py-2 border-b border-rose-100/25 dark:border-rose-950/15 flex justify-between items-center bg-white/40 dark:bg-love-dark-bg/20 flex-shrink-0">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-500/80 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-love-primary" />
+                <span>AI Pair Assistant</span>
+              </span>
+              <button
+                onClick={() => {
+                  setAiMessages([
+                    {
+                      id: 'welcome',
+                      sender: 'ai',
+                      text: 'Hello! I am your AI study assistant powered by Gemini. Ask me to write code, explain algorithms, or debug error logs. 💖',
+                      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    }
+                  ]);
+                }}
+                className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold text-rose-500 hover:text-love-primary hover:bg-rose-50/50 rounded-lg cursor-pointer transition-colors"
+                title="Clear conversation history"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Clear Chat</span>
+              </button>
+            </div>
+
             {/* AI Messages Stream container */}
             <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5">
               {aiMessages.map((msg) => {
@@ -249,7 +274,7 @@ export default function RightPanelTabs() {
                   <div key={msg.id} className={`flex gap-2 max-w-[85%] ${isAI ? 'mr-auto' : 'ml-auto flex-row-reverse'}`}>
                     {/* Avatar */}
                     {isAI ? (
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-love-primary to-purple-50 flex items-center justify-center text-white flex-shrink-0 shadow-sm">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-love-primary to-purple-500 flex items-center justify-center text-white flex-shrink-0 shadow-sm">
                         <Bot className="w-4 h-4" />
                       </div>
                     ) : (
@@ -311,7 +336,7 @@ export default function RightPanelTabs() {
               {/* Typing loader */}
               {isAiThinking && (
                 <div className="flex gap-2 max-w-[85%] mr-auto">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-love-primary to-purple-50 flex items-center justify-center text-white flex-shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-love-primary to-purple-500 flex items-center justify-center text-white flex-shrink-0">
                     <Bot className="w-4 h-4" />
                   </div>
                   <div className="space-y-1">
