@@ -50,7 +50,10 @@ export default function RightPanelTabs() {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
       // Build context structure for Gemini
-      const contents = currentHistory.map(msg => ({
+      // Filter out the welcome message to ensure history begins with a 'user' turn
+      const apiHistory = currentHistory.filter(msg => msg.id !== 'welcome');
+
+      const contents = apiHistory.map(msg => ({
         role: msg.sender === 'user' ? 'user' : 'model',
         parts: [{ text: msg.text }]
       }));
@@ -73,7 +76,9 @@ export default function RightPanelTabs() {
       });
 
       if (!response.ok) {
-        throw new Error('Gemini API call failed');
+        const errorText = await response.text();
+        console.error('Gemini API Error Response:', errorText);
+        throw new Error(`Gemini API call failed with status ${response.status}: ${errorText}`);
       }
 
       const data = await response.json();
