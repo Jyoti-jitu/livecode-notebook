@@ -92,7 +92,7 @@ export default function ScriptEditorView() {
 
   const handleEditorDidMount = (editor: any, monaco: any) => {
     editor.addCommand(monaco.KeyMod.Shift | monaco.KeyCode.Enter, () => { runScriptRef.current(); });
-    editor.addCommand(monaco.KeyMod.Ctrl | monaco.KeyCode.Enter, () => { runScriptRef.current(); });
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => { runScriptRef.current(); });
 
     import('@/lib/yjs').then(({ getOrCreateYjsDoc, getOrCreateWebsocketProvider }) => {
       import('y-monaco').then(({ MonacoBinding }) => {

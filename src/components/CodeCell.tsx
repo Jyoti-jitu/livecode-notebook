@@ -54,7 +54,7 @@ export default function CodeCell({ cell, index }: CodeCellProps) {
       handleRun();
     });
     
-    editor.addCommand(monaco.KeyMod.Ctrl | monaco.KeyCode.Enter, () => {
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
       handleRun();
     });
 
