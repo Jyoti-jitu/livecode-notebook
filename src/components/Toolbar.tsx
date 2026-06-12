@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { useLoveStudyStore } from '@/store/useLoveStudyStore';
-import { Code, FileText, Play, RotateCcw, Octagon, Save, Download, Check, Upload, FileUp, Undo, Redo } from 'lucide-react';
+import { Code, FileText, Play, RotateCcw, Octagon, Save, Download, Check, FileUp, Undo, Redo } from 'lucide-react';
 
 export default function Toolbar() {
   const store = useLoveStudyStore();
