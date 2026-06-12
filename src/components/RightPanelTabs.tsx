@@ -86,9 +86,13 @@ export default function RightPanelTabs() {
       ]);
     } catch (error: any) {
       console.error(error);
-      const friendlyMessage = error.message && error.message.includes('API key was reported as leaked')
-        ? 'Your GEMINI_API_KEY has been flagged as leaked by Google. Please update it with a new key in your .env.local file or deployment settings. 🛠️'
-        : 'Oops! I encountered an error communicating with Gemini. Please verify your connection and try again. 🛠️';
+      let friendlyMessage = error.message || 'Oops! I encountered an error communicating with Gemini. Please verify your connection and try again. 🛠️';
+      
+      if (friendlyMessage.includes('leaked') || friendlyMessage.includes('PERMISSION_DENIED')) {
+        friendlyMessage = 'Your `GEMINI_API_KEY` has been flagged as leaked or blocked by Google. Please update it with a new key in your `.env.local` file or deployment settings. 🔐';
+      } else if (friendlyMessage.includes('not found') || friendlyMessage.includes('ModelService.ListModels')) {
+        friendlyMessage = 'Google Gemini API returned a 404 error. This usually indicates the API key is restricted, disabled, or blocked due to being leaked. Please configure a valid `GEMINI_API_KEY` in your settings. 🔐';
+      }
       
       setAiMessages(prev => [
         ...prev,
