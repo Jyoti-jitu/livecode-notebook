@@ -1,58 +1,56 @@
-# 💕 LiveCode Notebook
+# LiveCode Notebook — Real-Time Collaborative Code Editor 🚀
 
-A **real-time collaborative live code notebook** built with Next.js, Monaco Editor, and Yjs — designed for pair programming and study sessions.
+LiveCode Notebook (also known as LoveStudy) is a premium real-time collaborative coding workspace and interactive notebook. It supports dynamic cell execution for Python (via browser-side Pyodide) and compiles/runs system languages like Java, C, and C++ through secure backend compiler environments.
 
-## ✨ Features
+## 🛠️ Features
 
-- 🧑‍💻 **Monaco Editor** — VS Code-quality editor in the browser (Python, JS, C++, Java, Go)
-- 🤝 **Real-time Collaboration** — Yjs-powered live cursors and multi-user sync
-- 📓 **Jupyter-style Notebooks** — Multi-cell Python notebooks with rich output
-- 📊 **DataFrame Tables** — Pandas DataFrames rendered as interactive tables
-- 📋 **Copy Output** — One-click copy button for cell output text
-- 💾 **MongoDB Persistence** — Notebooks, cells, and chat saved to database
-- 💬 **Study Room Chat** — Real-time chat panel for collaborators
-- 🍅 **Pomodoro Timer** — Built-in focus timer with streak tracking
-- 🌙 **Dark / Light Mode** — Smooth theme toggle
-- 📱 **Responsive Layout** — Mobile-friendly with drawer panels
+*   **Real-time Multi-user Synchronization**: Powered by Yjs, y-monaco, and WebSocket signaling.
+*   **Interactive Python Notebook Cells**: Powered by browser-side Pyodide execution.
+*   **System Languages Compiler**: Backend execution pipeline supporting Java, C, and C++.
+*   **Collaborative Chat, Notes, & AI Helper**: Live room chat, persistent shared markdown notes, and a built-in AI assistant powered by Google's Gemini 1.5 Flash.
+*   **Streaks & Study Time Dashboard**: Track your shared learning targets and streaks.
 
-## 🚀 Getting Started
+---
 
+## ⚙️ Local Development Setup
+
+### 1. Configure Environment Variables
+Create a `.env.local` file in the root directory and add your MongoDB database URI:
+```bash
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/lovestudy
+```
+
+### 2. Install Dependencies
 ```bash
 npm install
+```
+
+### 3. Run Development Server
+```bash
 npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-Open [http://localhost:3000](http://localhost:3000) to see the app.
+---
 
-## 🛠️ Tech Stack
+## ⚡ Deployment on Vercel
 
-| Layer | Technology |
-|-------|------------|
-| Framework | Next.js 16 (App Router) |
-| Editor | Monaco Editor + @monaco-editor/react |
-| Real-time | Yjs + y-websocket + y-monaco |
-| State | Zustand |
-| Database | MongoDB via Mongoose |
-| Styling | Tailwind CSS v4 |
-| Animation | Framer Motion |
-
-## 🔧 Environment Variables
-
-Create a `.env.local` file:
-
-```env
-MONGODB_URI=mongodb://localhost:27017/livecode
+### Step 1: Push Code to GitHub
+Ensure your repository is fully up-to-date:
+```bash
+git add -A
+git commit -m "prep: ready for Vercel deployment"
+git push origin main
 ```
 
-## 📁 Project Structure
+### Step 2: Import Project to Vercel
+1. Log in to [Vercel](https://vercel.com).
+2. Click **New Project** and import the `Jyoti-jitu/livecode-notebook` repository.
+3. Keep the default Build and Output settings (Next.js preset).
 
-```
-src/
-├── app/              # Next.js App Router pages & API routes
-│   ├── api/          # REST API endpoints
-│   └── notebook/     # Room-based notebook pages
-├── components/       # React UI components
-├── hooks/            # Custom React hooks
-├── lib/              # Database, Yjs, Pyodide utilities
-└── store/            # Zustand global state store
-```
+### Step 3: Configure Environment Variables in Vercel
+Under the **Environment Variables** section in the Vercel project settings, add the following key:
+*   `MONGODB_URI`: Your production MongoDB connection string (e.g., MongoDB Atlas).
+
+### Step 4: Click Deploy 🚀
+Vercel will build, optimize, and deploy your serverless endpoints and frontend automatically.
