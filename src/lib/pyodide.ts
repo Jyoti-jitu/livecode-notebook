@@ -74,7 +74,37 @@ export async function runPythonCell(code: string, files?: { name: string; conten
   try {
     const pyodide = await getPyodide();
     if (files && files.length > 0) {
-      for (const file of files) pyodide.FS.writeFile(file.name, file.content);
+      for (const file of files) {
+        // Write to both default working directory /home/pyodide/ and root /
+        const pathsToTry = [
+          file.name.startsWith('/') ? file.name : `/home/pyodide/${file.name}`,
+          file.name.startsWith('/') ? file.name : `/${file.name}`
+        ];
+        for (const p of pathsToTry) {
+          try {
+            // Ensure parent directories exist
+            const parts = p.split('/');
+            let currentPath = '';
+            for (let i = 0; i < parts.length - 1; i++) {
+              if (!parts[i] && i === 0) {
+                currentPath = '/';
+                continue;
+              }
+              currentPath = currentPath === '/' ? `/${parts[i]}` : `${currentPath}/${parts[i]}`;
+              if (currentPath) {
+                try {
+                  pyodide.FS.mkdir(currentPath);
+                } catch (e) {
+                  // Ignore if it already exists
+                }
+              }
+            }
+            pyodide.FS.writeFile(p, file.content);
+          } catch (e) {
+            console.warn(`Could not write file to path ${p}:`, e);
+          }
+        }
+      }
     }
     pyodide.globals.set('__current_cell_code__', code);
     const jsonStr = await pyodide.runPythonAsync(`run_notebook_cell(__current_cell_code__)`);
